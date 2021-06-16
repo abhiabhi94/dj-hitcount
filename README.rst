@@ -32,10 +32,10 @@ dj-hitcount
 
 Basic app that allows you to track the number of hits/views for a particular object.
 
-This project was built upon the efforts of `django-hitcount`_. It was made a separate project was there `for ease of maintenance`_.
+This project was built upon the efforts of `django-hitcount`_. It was made a separate project as the `original one had been stalled`_ for a long time.
 
 .. _`django-hitcount`: https://github.com/thornomad/django-hitcount
-.. _`ease of maintenance`: https://github.com/thornomad/django-hitcount/issues/110
+.. _original one had been stalled`: https://github.com/thornomad/django-hitcount/issues/110
 
 
 Documentation:
