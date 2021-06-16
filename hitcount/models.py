@@ -120,12 +120,10 @@ class Hit(models.Model):
         return 'Hit: %s' % self.pk
 
     def save(self, *args, **kwargs):
-
         """
         The first time the object is created and saved, we increment
         the associated HitCount object by one. The opposite applies
         if the Hit is deleted.
-
         """
         if self.pk is None:
             self.hitcount.increase()
@@ -151,7 +149,7 @@ class BlockedIP(models.Model):
     objects = BlockedIPManager()
 
     class Meta:
-        verbose_name = _('BlockList IP')
+        verbose_name = _('Blocked IP')
         verbose_name_plural = _('BlockList IPs')
 
     def __str__(self):
@@ -164,8 +162,8 @@ class BlockedUserAgent(models.Model):
     objects = BlockedUserAgentManager()
 
     class Meta:
-        verbose_name = _("Blocklisted User Agent")
-        verbose_name_plural = _("Blocklisted User Agents")
+        verbose_name = _("Blocked User Agent")
+        verbose_name_plural = _("Blocked User Agents")
 
     def __str__(self):
         return '%s' % self.user_agent
