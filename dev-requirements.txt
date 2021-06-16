@@ -1,0 +1,4 @@
+coverage
+pytest-django
+pytest-randomly
+selenium

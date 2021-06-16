@@ -1,0 +1,26 @@
+*.py[cod]
+*.egg-info
+
+# distribution
+build
+dist
+# Sphinx documentation
+docs/_build
+
+.tox
+.coverage*
+coverage*
+
+# editor files
+.idea
+.vscode
+*.swp
+
+# virtual-environment
+*venv*
+
+# database
+*db.sqlite*
+
+# selenium-stuff
+geckodriver.log
