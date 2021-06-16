@@ -35,7 +35,7 @@ Basic app that allows you to track the number of hits/views for a particular obj
 This project was built upon the efforts of `django-hitcount`_. It was made a separate project as the `original one had been stalled`_ for a long time.
 
 .. _`django-hitcount`: https://github.com/thornomad/django-hitcount
-.. _original one had been stalled`: https://github.com/thornomad/django-hitcount/issues/110
+.. _`original one had been stalled`: https://github.com/thornomad/django-hitcount/issues/110
 
 
 Documentation:
