@@ -18,12 +18,13 @@ Unreleased
         - ``BlackListUserAgent`` renamed to ``BlockedUserAgent``.
         - The ``ip`` field for ``Hit`` model has been made optional. This hopefully makes the project GDPR compliant. Please open an issue if still isn't.
             - To maintain backwards compatibility with ``django-hitcount``, an additional setting :ref:`HITCOUNT_USE_IP<hitcount_use_ip>` has been added.
+    - ``views``
+        - ``hitcount.views.update_hit_count_ajax`` that was to be removed in ``django-hitcount`` ``1.2`` has been removed. Use ``hitcount.views.HitCountJSONView`` instead.
+
+        - ``hitcount.views._update_hit_count`` that was to be removed in ``django-hitcount`` ``1.2`` has been removed. Use ``hitcount.mixins.HitCountViewMixin.hit_count`` instead.
 
     - removed additional dependency of ``django-etc``.
-
-    - ``hitcount.views.update_hit_count_ajax`` that was to be removed in ``django-hitcount`` ``1.2`` has been removed. Use ``hitcount.views.HitCountJSONView`` instead.
-
-    - ``hitcount.views._update_hit_count`` that was to be removed in ``django-hitcount`` ``1.2`` has been removed. Use ``hitcount.mixins.HitCountViewMixin.hit_count`` instead.
+    - added additional unit tests. Test coverage is now ``100%``.
 
 
 .. _boolean-trap: https://ariya.io/2011/08/hall-of-api-shame-boolean-trap

@@ -53,6 +53,9 @@ DATABASES = {
     }
 }
 
+# this reduces the testing time appreciably
+PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

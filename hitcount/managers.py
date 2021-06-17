@@ -43,18 +43,6 @@ class HitManager(models.Manager):
         period = timezone.now() - timedelta(**grace)
         return self.filter(created__gte=period).filter(*args, **kwargs)
 
-    def filter_ip(self, ip):
-        return self.filter(ip__exact=ip)
-
-    def filter_user(self, user):
-        return self.filter(user=user)
-
-    def filter_hitcount(self, hitcount):
-        return self.filter(hitcount=hitcount)
-
-    def filter_session(self, session):
-        return self.filter(session=session)
-
 
 class BlockedIPManager(models.Manager):
     def filter_ip(self, ip):
