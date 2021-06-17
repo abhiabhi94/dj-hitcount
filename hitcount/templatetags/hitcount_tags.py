@@ -148,6 +148,7 @@ register.tag('get_hit_count', get_hit_count)
 
 class WriteHitCountJavascriptVariables(template.Node):
 
+    @classmethod
     def handle_token(cls, parser, token):
         args = token.contents.split()
 
@@ -160,8 +161,6 @@ class WriteHitCountJavascriptVariables(template.Node):
                 '"insert_hit_count_js_variables for [object]"\n'
                 'Got: %s' % ' '.join(str(i) for i in args)
             )
-
-    handle_token = classmethod(handle_token)
 
     def __init__(self, obj_variable):
         self.obj_variable = template.Variable(obj_variable)
@@ -248,9 +247,9 @@ class WriteHitCountJavascript(template.Node):
 <script type="text/javascript">
 //<![CDATA[
 jQuery(document).ready(function($) {
-    $.postCSRF("%s", {
-      hitcountPK: "%s"
-    });
+  $.postCSRF("%(url)s", {
+    hitcountPK: "%(pk)s"
+  });
 });
 //]]>
 </script>
@@ -260,19 +259,20 @@ jQuery(document).ready(function($) {
 <script type="text/javascript">
 //<![CDATA[
 jQuery(document).ready(function($) {
-    $.postCSRF("%s", {
-      hitcountPK: "%s"
-    }).done(function(data) {
-      console.log(data);
-    }).fail(function(data) {
-      console.log('dj-hitcount: AJAX POST failed.');
-      console.log(data);
-    });
+  $.postCSRF("%(url)s", {
+    hitcountPK: "%(pk)s"
+  }).done(function(data) {
+    console.log(data);
+  }).fail(function(data) {
+    console.log('dj-hitcount: AJAX POST failed.');
+    console.log(data);
+  });
 });
 //]]>
 </script>
 """
 
+    @classmethod
     def handle_token(cls, parser, token):
         args = token.contents.split()
 
@@ -284,13 +284,11 @@ jQuery(document).ready(function($) {
             raise template.TemplateSyntaxError(
                 'insert_hit_count_js requires this syntax: '
                 '"insert_hit_count_js for [object]"\n'
-                '"insert_hit_count_js for [object] debug"'
+                '"insert_hit_count_js for [object] with debug"'
                 'Got: %s' % ' '.join(str(i) for i in args)
             )
 
-    handle_token = classmethod(handle_token)
-
-    def __init__(self, obj_variable, debug):
+    def __init__(self, obj_variable, *, debug):
         self.obj_variable = template.Variable(obj_variable)
         self.debug = debug
 
@@ -301,7 +299,7 @@ jQuery(document).ready(function($) {
             'insert_hit_count_js'
         )
         template = self.JS_TEMPLATE_DEBUG if self.debug else self.JS_TEMPLATE
-        return template % (str(reverse('hitcount:hit_ajax')), str(hit_count.pk))
+        return template % {'url': reverse('hitcount:hit_ajax'), 'pk': hit_count.pk}
 
 
 def insert_hit_count_js(parser, token):

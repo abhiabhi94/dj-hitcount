@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 from django.contrib.auth.models import ContentType
+from django.http import Http404
 
 from hitcount.conf import settings
 from hitcount.models import BlockedIP
@@ -8,6 +9,14 @@ from hitcount.models import BlockedUserAgent
 from hitcount.models import Hit
 from hitcount.utils import get_hitcount_model
 from hitcount.utils import get_ip
+
+
+class AJAXRequiredMixin:
+    def dispatch(self, request, *args, **kwargs):
+        if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            raise Http404()
+
+        return super().dispatch(request, *args, **kwargs)
 
 
 class HitCountModelMixin:
@@ -45,17 +54,13 @@ class HitCountViewMixin:
         UpdateHitCountResponse = namedtuple(
             'UpdateHitCountResponse', 'hit_counted hit_message')
 
-        # as of Django 1.8.4 empty sessions are not being saved
-        # https://code.djangoproject.com/ticket/25489
-        if request.session.session_key is None:
-            request.session.save()
-
         user = request.user
 
         if settings.HITCOUNT_USE_IP:
             ip = get_ip(request)
         else:
             ip = None
+
         user_agent = request.META.get('HTTP_USER_AGENT', '')[:255]
 
         # first, check our request against the IP blocked

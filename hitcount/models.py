@@ -102,7 +102,7 @@ class Hit(models.Model):
 
     """
     created = models.DateTimeField(editable=False, auto_now_add=True, db_index=True)
-    ip = models.CharField(max_length=40, editable=False, db_index=True, null=True, blank=True)
+    ip = models.CharField(max_length=40, editable=False, db_index=True, null=True)
     session = models.CharField(max_length=40, editable=False, db_index=True)
     user_agent = models.CharField(max_length=255, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, editable=False, on_delete=models.CASCADE)
@@ -150,7 +150,7 @@ class BlockedIP(models.Model):
 
     class Meta:
         verbose_name = _('Blocked IP')
-        verbose_name_plural = _('BlockList IPs')
+        verbose_name_plural = _('Blocked IPs')
 
     def __str__(self):
         return self.ip

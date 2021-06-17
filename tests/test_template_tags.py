@@ -1,6 +1,7 @@
 from datetime import timedelta
 from unittest.mock import patch
 
+from django.shortcuts import reverse
 from django.template import Context
 from django.template import Template
 from django.template import TemplateSyntaxError
@@ -14,12 +15,14 @@ from hitcount.utils import get_hitcount_model
 HitCount = get_hitcount_model()
 
 
-class TemplateTagGetHitCountTests(TestCase):
+class BaseTemplateTagsTest(TestCase):
     fixtures = ['initial_data.json']
 
-    def setUp(self):
-        self.post = Post.objects.get(pk=1)
-        hit_count = HitCount.objects.create(content_object=self.post)
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.post = Post.objects.first()
+        hit_count = HitCount.objects.create(content_object=cls.post)
 
         for x in range(10):
             created = timezone.now() - timedelta(minutes=x * 15)
@@ -32,6 +35,9 @@ class TemplateTagGetHitCountTests(TestCase):
     def _render(template, context):
         return Template(template).render(Context(context))
 
+
+class TestGetHitCount(BaseTemplateTagsTest):
+
     def test_returns_0(self):
         """
         {% get_hit_count for post%}
@@ -40,7 +46,8 @@ class TemplateTagGetHitCountTests(TestCase):
         and have created an object for the next time.
         """
         # no HitCounts to start
-        self.assertEqual(len(HitCount.objects.all()), 1)
+        self.assertEqual(HitCount.objects.all().count(), 1)
+
         post2 = Post.objects.create(title='second', content='post!')
 
         out = Template(
@@ -52,7 +59,7 @@ class TemplateTagGetHitCountTests(TestCase):
 
         # zero hits, but now one object
         self.assertEqual(str(0), out)
-        self.assertEqual(len(HitCount.objects.all()), 2)
+        self.assertEqual(HitCount.objects.all().count(), 2)
 
     def test_returns_10(self):
         """
@@ -162,7 +169,34 @@ class TemplateTagGetHitCountTests(TestCase):
 
         self.assertEqual("Total Hits in last 1h 15m: 6", out)
 
-    def test_get_js_variables(self):
+    def test_parsing_error_for_invalid_date_or_time(self):
+        self.assertRaises(
+            TemplateSyntaxError, self._render,
+            '{% load hitcount_tags %}{% get_hit_count for post within "foo=1,bar=30" %}',
+            {"post": self.post})
+
+    def test_parsing_error_for_non_existent_context_variable(self):
+        self.assertRaises(
+            TemplateSyntaxError, self._render,
+            "{% load hitcount_tags %}{% get_hit_count for post %}",
+            {"post_doesnt_context": self.post})
+
+    def test_parsing_error_for_wrong_number_of_args(self):
+        self.assertRaises(
+            TemplateSyntaxError, self._render,
+            '{% load hitcount_tags %}{% get_hit_count post %}',
+            {"post": self.post})
+
+    def test_parsing_error_for_passing_invalid_object(self):
+        self.assertRaises(
+            TemplateSyntaxError, self._render,
+            '{% load hitcount_tags %}{% get_hit_count post %}',
+            {"post": 'bob the baker'})
+
+
+class TestGetHitCountJSVariables(BaseTemplateTagsTest):
+
+    def test_usage(self):
         """
         {% get_hit_count_js_variables for [object] as [var_name] %}
 
@@ -181,7 +215,28 @@ class TemplateTagGetHitCountTests(TestCase):
         pk = self.post.hit_count.pk
         self.assertEqual('pk: %s || url: /hitcount/hit/ajax/ || hits: 10' % pk, out)
 
-    def test_insert_js_variables(self):
+    def test_parsing_errors_for_non_existent_context_variable(self):
+        self.assertRaises(
+            TemplateSyntaxError, self._render,
+            "{% load hitcount_tags %}{% get_hit_count_js_variables as hit_count_js %}",
+            {"post_variable_wrong": self.post})
+
+    def test_parsing_errors_for_wrong_number_of_variables(self):
+        self.assertRaises(
+            TemplateSyntaxError, self._render,
+            "{% load hitcount_tags %}{% get_hit_count_js_variables as hit_count_js %}",
+            {"post": self.post})
+
+    def test_parsing_errors_for_passing_wrong_object(self):
+        self.assertRaises(
+            TemplateSyntaxError, self._render,
+            "{% load hitcount_tags %}{% get_hit_count_js_variables for post as hit_count_js %}",
+            {"post": 'bob the baker'})
+
+
+class TestInsertHitCountJSVariables(BaseTemplateTagsTest):
+
+    def test_usage(self):
         """
         {% insert_hit_count_js_variables for [object] %}
 
@@ -195,70 +250,118 @@ class TemplateTagGetHitCountTests(TestCase):
         }))
 
         pk = self.post.hit_count.pk
+
         self.assertEqual(
-            '<script type="text/javascript">\n'
-            'var hitcountJS = {hitcountPK : \'%s\',hitcountURL :'
-            ' \'/hitcount/hit/ajax/\'};\n</script>' % pk, out)
+            (
+                '<script type="text/javascript">\n'
+                'var hitcountJS = {hitcountPK : \'%s\',hitcountURL :'
+                ' \'/hitcount/hit/ajax/\'};\n</script>'
+            ) % pk,
+            out
+        )
 
-    def test_parsing_errors(self):
-        # invalid date/time
-        self.assertRaises(
-            TemplateSyntaxError, self._render,
-            '{% load hitcount_tags %}{% get_hit_count for post within "foo=1,bar=30" %}',
-            {"post": self.post})
-
-        # non-existent context variable
-        self.assertRaises(
-            TemplateSyntaxError, self._render,
-            "{% load hitcount_tags %}{% get_hit_count for post %}",
-            {"post_doesnt_context": self.post})
-
-        # wrong number of args
-        self.assertRaises(
-            TemplateSyntaxError, self._render,
-            '{% load hitcount_tags %}{% get_hit_count post %}',
-            {"post": self.post})
-
-        # not passed valid object
-        self.assertRaises(
-            TemplateSyntaxError, self._render,
-            '{% load hitcount_tags %}{% get_hit_count post %}',
-            {"post": 'bob the baker'})
-
-    def test_parsing_errors_get_js_variables(self):
-        # wrong number of variables
-        self.assertRaises(
-            TemplateSyntaxError, self._render,
-            "{% load hitcount_tags %}{% get_hit_count_js_variables as hit_count_js %}",
-            {"post_variable_wrong": self.post})
-
-        # wrong number of variables
-        self.assertRaises(
-            TemplateSyntaxError, self._render,
-            "{% load hitcount_tags %}{% get_hit_count_js_variables as hit_count_js %}",
-            {"post": self.post})
-
-        # a string not an object
-        self.assertRaises(
-            TemplateSyntaxError, self._render,
-            "{% load hitcount_tags %}{% get_hit_count_js_variables for post as hit_count_js %}",
-            {"post": 'bob the baker'})
-
-    def test_parsing_errors_insert_js_variables(self):
-        # wrong number of variables
+    def test_parsing_errors_for_wrong_number_of_variables(self):
         self.assertRaises(
             TemplateSyntaxError, self._render,
             "{% load hitcount_tags %}{% insert_hit_count_js_variables post %}",
             {"post": self.post})
 
-        # non-existent context variable
+    def test_parsing_errors_for_non_existent_context_variable(self):
         self.assertRaises(
             TemplateSyntaxError, self._render,
             "{% load hitcount_tags %}{% insert_hit_count_js_variables for post %}",
             {"post_doesnt_context": self.post})
 
-        # a string not an object
+    def test_parsing_errors_for_passing_wrong_object(self):
         self.assertRaises(
             TemplateSyntaxError, self._render,
             "{% load hitcount_tags %}{% insert_hit_count_js_variables for post %}",
+            {"post": 'bob the baker'})
+
+
+class TestInsertHitCountJS(BaseTemplateTagsTest):
+
+    def test_without_debug(self):
+        """
+        {% insert_hit_count_js for [object] %}
+
+        Test for writing of js directly onto the template.
+        """
+        out = Template(
+            "{% load hitcount_tags %}"
+            '{% insert_hit_count_js for post %}'
+        ).render(Context({
+            "post": self.post
+        }))
+
+        pk = self.post.hit_count.pk
+        expected = """
+<script type="text/javascript">
+//<![CDATA[
+jQuery(document).ready(function($) {
+  $.postCSRF("%(url)s", {
+    hitcountPK: "%(pk)s"
+  });
+});
+//]]>
+</script>
+"""
+
+        self.assertEqual(
+            expected % {'url': reverse('hitcount:hit_ajax'), 'pk': pk},
+            out,
+        )
+
+    def test_with_debug(self):
+        """
+        {% insert_hit_count_js for [object] debug=True %}
+
+        Test for writing of js directly onto the template.
+        """
+        out = Template(
+            "{% load hitcount_tags %}"
+            '{% insert_hit_count_js for post debug %}'
+        ).render(Context({
+            "post": self.post
+        }))
+
+        pk = self.post.hit_count.pk
+        expected = """
+<script type="text/javascript">
+//<![CDATA[
+jQuery(document).ready(function($) {
+  $.postCSRF("%(url)s", {
+    hitcountPK: "%(pk)s"
+  }).done(function(data) {
+    console.log(data);
+  }).fail(function(data) {
+    console.log('dj-hitcount: AJAX POST failed.');
+    console.log(data);
+  });
+});
+//]]>
+</script>
+"""
+
+        self.assertEqual(
+            expected % {'url': reverse('hitcount:hit_ajax'), 'pk': pk},
+            out,
+        )
+
+    def test_parsing_errors_for_wrong_number_of_variables(self):
+        self.assertRaises(
+            TemplateSyntaxError, self._render,
+            "{% load hitcount_tags %}{% insert_hit_count_js post %}",
+            {"post": self.post})
+
+    def test_parsing_errors_for_non_existent_context_variable(self):
+        self.assertRaises(
+            TemplateSyntaxError, self._render,
+            "{% load hitcount_tags %}{% insert_hit_count_js for post %}",
+            {"post_doesnt_context": self.post})
+
+    def test_parsing_errors_for_passing_wrong_object(self):
+        self.assertRaises(
+            TemplateSyntaxError, self._render,
+            "{% load hitcount_tags %}{% insert_hit_count_js for post %}",
             {"post": 'bob the baker'})

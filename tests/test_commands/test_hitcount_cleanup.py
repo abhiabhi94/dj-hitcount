@@ -16,7 +16,7 @@ HitCount = get_hitcount_model()
 
 
 @patch.object(settings, 'HITCOUNT_KEEP_HIT_IN_DATABASE', {'days': 30})
-class HitCountCleanUp(TestCase):
+class TestHitCountCleanUp(TestCase):
     COMMAND_NAME = 'hitcount_cleanup'
 
     def setUp(self):
@@ -39,7 +39,7 @@ class HitCountCleanUp(TestCase):
 
     def test_preserve_hitcount(self):
         """Removing Hits should not decrease the total HitCount."""
-        hit_count = HitCount.objects.get(pk=1)
+        hit_count = HitCount.objects.last()
 
         call_command(self.COMMAND_NAME)
 

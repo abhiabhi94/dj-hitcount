@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 @pytest.mark.slow
-class UpdateHitCountSelenium(StaticLiveServerTestCase):
+class TestUpdateHitCount(StaticLiveServerTestCase):
 
     def setUp(self):
         options = Options()
