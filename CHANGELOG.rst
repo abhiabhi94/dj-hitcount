@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.0.1
+-----
+
+- Fix saving of anonymous sessions(`#4`_).
+
+.. _#4: https://github.com/abhiabhi94/dj-hitcount/pulls/4/
+
 1.0.0
 -----
 
