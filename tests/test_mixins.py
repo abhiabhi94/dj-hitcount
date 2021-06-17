@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
+from django.contrib.sessions.backends.db import SessionStore
 from django.utils import timezone
 
 from hitcount.conf import settings
@@ -27,6 +28,19 @@ class TestHitCountViewMixin(BaseHitCountViewTest):
         # test database
         hit = Hit.objects.last()
         self.assertIsNone(hit.ip)
+
+    def test_session_key_is_not_present(self):
+        session = SessionStore(session_key=None)
+
+        self.request_post.session = session
+
+        response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)
+
+        self.assertIs(response.hit_counted, True)
+        self.assertEqual(response.hit_message, 'Hit counted: session key')
+        # test database
+        hit = Hit.objects.last()
+        self.assertIsNotNone(hit.session)
 
     def test_anonymous_user_hit(self):
         response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)

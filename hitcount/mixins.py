@@ -53,6 +53,10 @@ class HitCountViewMixin:
         """
         UpdateHitCountResponse = namedtuple(
             'UpdateHitCountResponse', 'hit_counted hit_message')
+        # as of Django 1.8.4 empty sessions are not being saved
+        # https://code.djangoproject.com/ticket/25489
+        if not request.session.session_key:
+            request.session.create()
 
         user = request.user
 
