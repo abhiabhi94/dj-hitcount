@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Unreleased
-----------
+1.0.0
+-----
 
 - Bring back project to life.
 - Change in project structure
