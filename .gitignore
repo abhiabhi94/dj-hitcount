@@ -7,6 +7,9 @@ dist
 # Sphinx documentation
 docs/_build
 
+# translation auto-generated files
+*.mo
+
 .tox
 .coverage*
 coverage*

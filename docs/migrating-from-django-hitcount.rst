@@ -1,14 +1,14 @@
 Migrating from django-hitcount
 ==============================
 
-The project has been built with the idea to make the migrations as smooth as possible. After installation of ``dj-hitcount``, run the migrations command to make the appropriate changes to the database.
+The project has been built with the idea to make the migrations as smooth as possible. After installation of ``dj-hitcount``, run the migrations command to make the appropriate changes to the database (see the ``models`` section in this list for specifics).
 
 .. code:: sh
 
     python manage.py migrate hitcount
 
 
-You will also have to make changes if you were using any one of the following:
+You will also have to make some changes if you were using any one of the following:
 
     - ``signals``
         - ``delete_hit_count`` from ``hitcount.models`` has been moved to ``hitcount.signals``.
