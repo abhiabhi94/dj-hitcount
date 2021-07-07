@@ -1,11 +1,13 @@
-import re
-
 from django.apps import apps
+try:
+    from django.utils.regex_helper import _lazy_re_compile
+except ImportError:
+    from django.core.validators import _lazy_re_compile
 
 from hitcount.conf import settings
 
 # this is not intended to be an all-knowing IP address regex
-IP_RE = re.compile(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
+IP_RE = _lazy_re_compile(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
 
 
 def get_ip(request):
