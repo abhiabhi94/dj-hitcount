@@ -1,36 +1,15 @@
 from datetime import timedelta
 from unittest.mock import patch
 
-from django.test import SimpleTestCase
 from django.test import TestCase
 from django.utils import timezone
 
 from blog.models import Post
-from hitcount.models import BlockedIP
-from hitcount.models import BlockedUserAgent
 from hitcount.models import Hit
 from hitcount.utils import get_hitcount_model
 
 
 HitCount = get_hitcount_model()
-
-
-class TestBlockedUserAgent(SimpleTestCase):
-
-    def test_string_representation(self):
-        ua_text = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4)"
-
-        ua = BlockedUserAgent(user_agent=ua_text)
-
-        self.assertEqual(str(ua), ua_text)
-
-
-class TestBlockedIPModel(SimpleTestCase):
-
-    def test_string_representation(self):
-        ip = BlockedIP(ip='127.0.0.1')
-
-        self.assertEqual(str(ip), '127.0.0.1')
 
 
 class TestHitModel(TestCase):
