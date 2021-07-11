@@ -42,11 +42,11 @@ class HitCountBase(models.Model):
 
     def increase(self):
         self.hits = F('hits') + 1
-        self.save()
+        self.save(update_fields=['hits'])
 
     def decrease(self):
         self.hits = F('hits') - 1
-        self.save()
+        self.save(update_fields=['hits'])
 
     def hits_in_last(self, **kwargs):
         """
