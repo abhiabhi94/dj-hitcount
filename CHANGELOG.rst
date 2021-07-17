@@ -1,6 +1,17 @@
 Changelog
 =========
 
+1.1.0
+-----
+
+- Confirm support for python ``3.10-dev`` (`#11`_).
+- Optimize query for saving of increased and decreased hits(`#10`_).
+- Prevent compiling of ``regex`` for IP detection on every import of ``hitcount.utils`` (`#8`_)
+
+.. _#8: https://github.com/abhiabhi94/dj-hitcount/pull/8/
+.. _#10: https://github.com/abhiabhi94/dj-hitcount/pull/10/
+.. _#11: https://github.com/abhiabhi94/dj-hitcount/pull/11/
+
 1.0.1
 -----
 
