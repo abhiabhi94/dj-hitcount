@@ -48,14 +48,15 @@ class TestHitCountViewMixin(BaseHitCountViewTest):
         self.assertIs(response.hit_counted, True)
         self.assertEqual(response.hit_message, 'Hit counted: session key')
 
-    def test_multiple_anonymous_user_hit_not_counted(self):
+    @patch.object(settings, 'HITCOUNT_HITS_PER_SESSION_LIMIT', 1)
+    def test_multiple_anonymous_user_hit_not_counted_with_session_limit(self):
         response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)
         self.assertIs(response.hit_counted, True)
         self.assertEqual(response.hit_message, 'Hit counted: session key')
 
         response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)
         self.assertIs(response.hit_counted, False)
-        self.assertEqual(response.hit_message, 'Not counted: session key has active hit')
+        self.assertEqual(response.hit_message, 'Not counted: hits per session limit reached.')
 
     def test_multiple_anonymous_user_hit_counted_after_filter_active(self):
         # create a Hit ten days ago
@@ -74,19 +75,14 @@ class TestHitCountViewMixin(BaseHitCountViewTest):
         self.assertEqual(response.hit_message, 'Hit counted: session key')
 
     def test_registered_user_hit(self):
-        """
-        Test AnonymousUser Hit
-        """
         self.request_post.user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
         response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)
 
         self.assertIs(response.hit_counted, True)
         self.assertEqual(response.hit_message, 'Hit counted: user authentication')
 
-    def test_registered_user_hit_not_counted(self):
-        """
-        Test Multiple AnonymousUser Hit, not counted
-        """
+    @patch.object(settings, 'HITCOUNT_HITS_PER_SESSION_LIMIT', 1)
+    def test_registered_user_hit_with_session_limit(self):
         self.request_post.user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
 
         response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)
@@ -95,12 +91,9 @@ class TestHitCountViewMixin(BaseHitCountViewTest):
 
         response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)
         self.assertIs(response.hit_counted, False)
-        self.assertEqual(response.hit_message, 'Not counted: authenticated user has active hit')
+        self.assertEqual(response.hit_message, 'Not counted: hits per session limit reached.')
 
     def test_registered_user_hit_counted_after_filter_active(self):
-        """
-        Test Multiple AnonymousUser Hit, counted because of filter active
-        """
         self.request_post.user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
 
         # create a Hit ten days ago
@@ -143,6 +136,28 @@ class TestHitCountViewMixin(BaseHitCountViewTest):
         hit_count = HitCount.objects.get(pk=self.hit_count.pk)
 
         self.assertEqual(hit_count.hits, 2)
+
+    @patch.object(settings, 'HITCOUNT_HITS_PER_SESSION_LIMIT', 1)
+    def test_hits_per_session_limit_for_anonymous_user(self):
+        response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)
+        self.assertIs(response.hit_counted, True)
+        self.assertEqual(response.hit_message, 'Hit counted: session key')
+
+        response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)
+        self.assertIs(response.hit_counted, False)
+        self.assertEqual(response.hit_message, 'Not counted: hits per session limit reached.')
+
+    @patch.object(settings, 'HITCOUNT_HITS_PER_SESSION_LIMIT', 1)
+    def test_hits_per_session_limit_for_authenticated_user(self):
+        self.request_post.user = User.objects.create_user('john', 'lennon@thebeatles.com', 'johnpassword')
+
+        response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)
+        self.assertIs(response.hit_counted, True)
+        self.assertEqual(response.hit_message, 'Hit counted: user authentication')
+
+        response = HitCountViewMixin.hit_count(self.request_post, self.hit_count)
+        self.assertIs(response.hit_counted, False)
+        self.assertEqual(response.hit_message, 'Not counted: hits per session limit reached.')
 
     @patch.object(settings, 'HITCOUNT_EXCLUDE_USER_GROUP', ('Admin',))
     def test_excluded_user_group_not_counted(self):

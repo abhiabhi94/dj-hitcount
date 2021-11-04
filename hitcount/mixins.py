@@ -105,23 +105,23 @@ class HitCountViewMixin:
         )
 
         # first, use a user's authentication to see if they made an earlier hit
+        hits_per_session_limit = settings.HITCOUNT_HITS_PER_SESSION_LIMIT
+        if (
+            hits_per_session_limit
+            and
+            active_hits_qs.filter(session=session_key).filter(hitcount=hitcount).count() >= hits_per_session_limit
+        ):
+            return UpdateHitCountResponse(
+                False, 'Not counted: hits per session limit reached.')
+
         if request.user.is_authenticated:
-            if not active_hits_qs.filter(user=user).filter(hitcount=hitcount).exists():
-                hit.user = user  # associate this hit with a user
-                hit.save()
+            hit.user = user  # associate this hit with a user
+            hit.save()
 
-                response = UpdateHitCountResponse(
-                    True, 'Hit counted: user authentication')
-            else:
-                response = UpdateHitCountResponse(
-                    False, 'Not counted: authenticated user has active hit')
-
-        # if not authenticated, see if we have a repeat session
+            response = UpdateHitCountResponse(
+                True, 'Hit counted: user authentication')
         else:
-            if not active_hits_qs.filter(session=session_key).filter(hitcount=hitcount).exists():
-                hit.save()
-                response = UpdateHitCountResponse(True, 'Hit counted: session key')
-            else:
-                response = UpdateHitCountResponse(False, 'Not counted: session key has active hit')
+            hit.save()
+            response = UpdateHitCountResponse(True, 'Hit counted: session key')
 
         return response
