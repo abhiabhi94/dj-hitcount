@@ -1,5 +1,6 @@
 import json
 from importlib import import_module
+from unittest.mock import patch
 
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404
@@ -108,6 +109,7 @@ class TestHitCountDetailView(BaseHitCountViewTest):
         self.assertEqual(response.context_data['hitcount']['total_hits'], 1)
         self.assertEqual(response.context_data['hitcount']['pk'], self.hit_count.pk)
 
+    @patch.object(settings, 'HITCOUNT_HITS_PER_SESSION_LIMIT', 1)
     def test_count_hit_incremented_only_once(self):
         """
         Increment a hit and then get the response.

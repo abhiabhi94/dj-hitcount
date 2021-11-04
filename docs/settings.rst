@@ -29,6 +29,14 @@ Limit the number of **active** ``Hits`` from a single IP address. 0 means that i
     # default value
     HITCOUNT_HITS_PER_IP_LIMIT = 0
 
+HITCOUNT_HITS_PER_SESSION_LIMIT
+-------------------------------
+Limit the number of **active** ``Hits`` from a single browser session. ``0`` means it is unlimited.::
+
+    # default value
+    HITCOUNT_HITS_PER_SESSION_LIMIT = 0
+
+
 HITCOUNT_EXCLUDE_USER_GROUP
 ---------------------------
 

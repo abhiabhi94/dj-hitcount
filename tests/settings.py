@@ -103,5 +103,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 HITCOUNT_KEEP_HIT_ACTIVE = {'minutes': 60}
 HITCOUNT_HITS_PER_IP_LIMIT = 0  # unlimited
+HITCOUNT_HITS_PER_SESSION_LIMIT = 0  # unlimited.
 HITCOUNT_EXCLUDE_USER_GROUP = ()  # not used
 HITCOUNT_KEEP_HIT_IN_DATABASE = {'seconds': 10}
