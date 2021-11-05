@@ -42,3 +42,17 @@ class HitManager(models.Manager):
         grace = settings.HITCOUNT_KEEP_HIT_ACTIVE
         period = timezone.now() - timedelta(**grace)
         return self.filter(created__gte=period).filter(*args, **kwargs)
+
+    def has_limit_reached_by_ip(self, ip=None):
+        hits_per_ip_limit = settings.HITCOUNT_HITS_PER_IP_LIMIT
+        if not ip or not hits_per_ip_limit:
+            return False
+
+        return self.filter_active(ip=ip).count() >= hits_per_ip_limit
+
+    def has_limit_reached_by_session(self, session, hitcount):
+        hits_per_session_limit = settings.HITCOUNT_HITS_PER_SESSION_LIMIT
+        if not hits_per_session_limit:
+            return False
+
+        return self.filter_active(session=session, hitcount=hitcount).count() >= hits_per_session_limit

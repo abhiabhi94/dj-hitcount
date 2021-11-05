@@ -68,12 +68,11 @@ class HitCountViewMixin:
         user_agent = request.META.get('HTTP_USER_AGENT', '')[:255]
 
         # first, check our request against the IP blocked
-        if ip:
-            if BlockedIP.objects.filter_ip(ip).exists():
-                return UpdateHitCountResponse(False, 'Not counted: user IP has been blocked')
+        if BlockedIP.objects.is_blocked(ip):
+            return UpdateHitCountResponse(False, 'Not counted: user IP has been blocked')
 
         # second, check our request against the user agent blocked
-        if BlockedUserAgent.objects.filter_user_agent(user_agent).exists():
+        if BlockedUserAgent.objects.is_blocked(user_agent):
             return UpdateHitCountResponse(False, 'Not counted: user agent has been blocked')
 
         # third, see if we are excluding a specific user group or not
@@ -85,43 +84,30 @@ class HitCountViewMixin:
         # eliminated first three possible exclusions, now on to checking our database of
         # active hits to see if we should count another one
 
-        # start with a fresh active query set (HITCOUNT_KEEP_HIT_ACTIVE)
-        active_hits_qs = Hit.objects.filter_active()
-
         # check limit on hits from a unique ip address (HITCOUNT_HITS_PER_IP_LIMIT)
-        hits_per_ip_limit = settings.HITCOUNT_HITS_PER_IP_LIMIT
-        if ip and hits_per_ip_limit:
-            if active_hits_qs.filter(ip=ip).count() >= hits_per_ip_limit:
-                return UpdateHitCountResponse(
-                    False, 'Not counted: hits per IP address limit reached')
+        if Hit.objects.has_limit_reached_by_ip(ip):
+            return UpdateHitCountResponse(
+                False, 'Not counted: hits per IP address limit reached')
 
         session_key = request.session.session_key
-        # create a generic Hit object with request data
+        if Hit.objects.has_limit_reached_by_session(session_key, hitcount):
+            return UpdateHitCountResponse(
+                False, 'Not counted: hits per session limit reached.')
+
         hit = Hit(
             session=session_key,
             hitcount=hitcount,
             ip=ip,
-            user_agent=request.META.get('HTTP_USER_AGENT', '')[:255],
+            user_agent=user_agent,
         )
 
-        # first, use a user's authentication to see if they made an earlier hit
-        hits_per_session_limit = settings.HITCOUNT_HITS_PER_SESSION_LIMIT
-        if (
-            hits_per_session_limit
-            and
-            active_hits_qs.filter(session=session_key).filter(hitcount=hitcount).count() >= hits_per_session_limit
-        ):
-            return UpdateHitCountResponse(
-                False, 'Not counted: hits per session limit reached.')
-
         if request.user.is_authenticated:
-            hit.user = user  # associate this hit with a user
-            hit.save()
+            hit.user = user
 
             response = UpdateHitCountResponse(
                 True, 'Hit counted: user authentication')
         else:
-            hit.save()
             response = UpdateHitCountResponse(True, 'Hit counted: session key')
 
+        hit.save()
         return response
