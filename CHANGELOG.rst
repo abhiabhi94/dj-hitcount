@@ -1,6 +1,17 @@
 Changelog
 =========
 
+1.2.0
+-----
+
+- Confirm support for python ``3.10`` (`#19`_).
+- Add a setting for limiting hits per single browser session (`#16`_).
+- Respect the setting for limiting hits per IP before counting a hit (`#18`_).
+
+.. _#18: https://github.com/abhiabhi94/dj-hitcount/pull/18/
+.. _#16: https://github.com/abhiabhi94/dj-hitcount/pull/16/
+.. _#19: https://github.com/abhiabhi94/dj-hitcount/pull/19/
+
 1.1.0
 -----
 
