@@ -1,3 +1,81 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "dj-hitcount"
+version = "1.2.0"
+authors = ["Abhyudai"]
+description = "Hit counting application for django"
+readme = "README.rst"
+license = "MIT"
+homepage = "https://github.com/abhiabhi94/dj-hitcount"
+repository = "https://github.com/abhiabhi94/dj-hitcount"
+documentation = "https://dj-hitcount.readthedocs.io"
+keywords = [
+    "django",
+    "hit",
+    "hits",
+    "hitcount",
+    "views",
+]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 2.2",
+    "Framework :: Django :: 3.0",
+    "Framework :: Django :: 3.1",
+    "Framework :: Django :: 3.2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+]
+packages = [
+    { include = "hitcount" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+Django = ">=2.2"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6"
+pytest-django = "^4"
+pytest-randomly = "^3"
+selenium = "^3"
+Sphinx = "^4.4.0"
+sphinx-rtd-theme = "^1.0.0"
+coverage = {extras = ["toml"], version = "^6.3.1"}
+
+[tool.pytest.ini_options]
+django_find_project = "false"
+addopts = """\
+    -p no:doctest
+    --ds=tests.settings
+    --reuse-db
+    """
+markers =[
+    # marks tests as slow (deselect with '-m "not slow"')
+    "slow",
+]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = [
+    "hitcount",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[upload_sphinx]
+upload-dir = "docs/_build/html"

@@ -28,9 +28,3 @@ repos:
     rev: v1.7.0
     hooks:
     -  id: rst-backticks
-
--   repo: https://github.com/mgedmin/check-manifest
-    rev: "0.46"
-    hooks:
-    -   id: check-manifest
-        args: [--no-build-isolation]
