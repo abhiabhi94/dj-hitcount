@@ -25,9 +25,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Ensure latest setuptools
+      - name: Ensure latest pip
         run: |
-          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade pip wheel
 
       - name: Install dependencies
         run: |
@@ -38,36 +38,6 @@ jobs:
           python -m tox --version
           python -m tox -e lint
 
- docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10'
-
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Ensure latest setuptools
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-
-      - name: Install dependencies
-        run: |
-          python -m pip install tox
-      - name: Build docs
-        run: |
-          python -m pip --version
-          python -m tox --version
-          python -m tox -e docs
-
  tests:
     name: Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
@@ -77,7 +47,6 @@ jobs:
       max-parallel: 5
       matrix:
         python-version:
-          - 3.6
           - 3.7
           - 3.8
           - 3.9
@@ -101,8 +70,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools wheel
-        python -m pip install --upgrade tox tox-py codecov
+        python -m pip install --upgrade pip wheel
+        python -m pip install --upgrade tox tox-py coverage[toml] codecov
 
     - name: Run tox targets for ${{ matrix.python-version }}
       run: |

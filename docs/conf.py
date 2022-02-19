@@ -9,7 +9,7 @@ PROJECT_ROOT = os.path.dirname(os.getcwd())
 
 
 def _get_version_and_release():
-    with open(os.path.join(PROJECT_ROOT, 'setup.cfg'), 'r') as fp:
+    with open(os.path.join(PROJECT_ROOT, 'pyproject.toml'), 'r') as fp:
         for line in fp:
             if line.startswith('version = '):
                 version_line = line.strip()
