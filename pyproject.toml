@@ -51,8 +51,8 @@ pytest-django = "^4"
 pytest-randomly = "^3"
 selenium = "^3"
 Sphinx = "^4.4.0"
-sphinx-rtd-theme = "^1.0.0"
 coverage = {extras = ["toml"], version = "^6.3.1"}
+furo = "^2022.2.14"
 
 [tool.pytest.ini_options]
 django_find_project = "false"
