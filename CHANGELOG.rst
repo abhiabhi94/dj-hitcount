@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.3.0
+-----
+
+- Confirm support for python ``3.11-dev`` and django ``4.0`` (`#26`_).
+- Drop support for python ``3.6`` and django ``2.1`` (`#21`_)..
+
+.. _#26: https://github.com/abhiabhi94/dj-hitcount/pull/26/
+.. _#21: https://github.com/abhiabhi94/dj-hitcount/pull/21/
+
 1.2.0
 -----
 
