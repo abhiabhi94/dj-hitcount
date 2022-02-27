@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "dj-hitcount"
-version = "1.2.0"
+version = "1.3.0"
 authors = ["Abhyudai"]
 description = "Hit counting application for django"
 readme = "README.rst"
