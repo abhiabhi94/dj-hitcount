@@ -85,7 +85,7 @@ class HitCountViewMixin:
         # active hits to see if we should count another one
 
         # check limit on hits from a unique ip address (HITCOUNT_HITS_PER_IP_LIMIT)
-        if Hit.objects.has_limit_reached_by_ip(ip):
+        if Hit.objects.has_limit_reached_by_ip(ip, hitcount):
             return UpdateHitCountResponse(
                 False, 'Not counted: hits per IP address limit reached')
 
