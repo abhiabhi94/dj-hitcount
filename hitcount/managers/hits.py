@@ -43,7 +43,7 @@ class HitManager(models.Manager):
         period = timezone.now() - timedelta(**grace)
         return self.filter(created__gte=period).filter(*args, **kwargs)
 
-    def has_limit_reached_by_ip(self, ip=None, hitcount=None):
+    def has_limit_reached_by_ip(self, ip, hitcount):
         hits_per_ip_limit = settings.HITCOUNT_HITS_PER_IP_LIMIT
         if not ip or not hits_per_ip_limit:
             return False
