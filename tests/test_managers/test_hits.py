@@ -44,14 +44,14 @@ class TestHitManager(TestCase):
 
         # all hits are counted.
         with patch.object(settings, 'HITCOUNT_HITS_PER_IP_LIMIT', 0):
-            self.assertIs(Hit.objects.has_limit_reached_by_ip(), False)
+            self.assertIs(Hit.objects.has_limit_reached_by_ip(None, self.hitcount), False)
 
             Hit.objects.create(hitcount=self.hitcount, ip=ip)
 
-            self.assertIs(Hit.objects.has_limit_reached_by_ip(ip), False)
+            self.assertIs(Hit.objects.has_limit_reached_by_ip(ip, self.hitcount), False)
 
         with patch.object(settings, 'HITCOUNT_HITS_PER_IP_LIMIT', 2):
-            self.assertIs(Hit.objects.has_limit_reached_by_ip(ip), True)
+            self.assertIs(Hit.objects.has_limit_reached_by_ip(ip, self.hitcount), True)
 
     def test_has_limit_reached_by_session(self):
         request = RequestFactory()
