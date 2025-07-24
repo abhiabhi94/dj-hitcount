@@ -1,6 +1,34 @@
 Changelog
 =========
 
+`v2.0.0 <https://github.com/abhiabhi94/dj-hitcount/tree/v2.0.0>`__
+----------------------------------------------------------------------------------------
+
+`Full
+Changelog <https://github.com/abhiabhi94/dj-hitcount/compare/v1.3.0...v2.0.0>`__
+
+We sincerely apologize for the long delay since our last release. This major version brings
+the package up to date with the latest Django and Python versions while removing support
+for end-of-life versions.
+
+**Breaking Changes**
+
+- **DROPPED** support for Python ``3.6``, ``3.7``, ``3.8``, and ``3.9`` - these versions have reached end-of-life
+- **DROPPED** support for Django ``2.2``, ``3.0``, ``3.1``, and ``3.2`` - these versions are no longer supported by Django
+- Minimum Python version is now ``3.10``
+- Minimum Django version is now ``4.2`` (LTS)
+
+**Features**
+
+- **NEW** support for Python ``3.11``, ``3.12``, and ``3.13``
+- **NEW** support for Django ``4.2`` (LTS), ``5.0``, ``5.1``, and ``5.2``
+- Removed deprecated Django features and compatibility code for better performance
+
+**Chores**
+
+- Migrated from ``poetry`` to ``pyproject.toml``.
+
+
 1.3.0
 -----
 

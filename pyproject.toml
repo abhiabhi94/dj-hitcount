@@ -1,17 +1,17 @@
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[project]
 name = "dj-hitcount"
 version = "1.3.0"
-authors = ["Abhyudai"]
+authors = [
+    {name = "Abhyudai"},
+]
 description = "Hit counting application for django"
 readme = "README.rst"
-license = "MIT"
-homepage = "https://github.com/abhiabhi94/dj-hitcount"
-repository = "https://github.com/abhiabhi94/dj-hitcount"
-documentation = "https://dj-hitcount.readthedocs.io"
+license = {text = "MIT"}
+requires-python = ">=3.10"
 keywords = [
     "django",
     "hit",
@@ -22,46 +22,53 @@ keywords = [
 classifiers = [
     "Environment :: Web Environment",
     "Framework :: Django",
-    "Framework :: Django :: 2.2",
-    "Framework :: Django :: 3.0",
-    "Framework :: Django :: 3.1",
-    "Framework :: Django :: 3.2",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
-packages = [
-    { include = "hitcount" },
+dependencies = [
+    "Django>=4.2",
 ]
 
-[tool.poetry.dependencies]
-python = "^3.7"
-Django = ">=2.2"
+[project.urls]
+Homepage = "https://github.com/abhiabhi94/dj-hitcount"
+Repository = "https://github.com/abhiabhi94/dj-hitcount"
+Documentation = "https://dj-hitcount.readthedocs.io"
 
-[tool.poetry.dev-dependencies]
-pytest = "^6"
-pytest-django = "^4"
-pytest-randomly = "^3"
-selenium = "^3"
-Sphinx = "^4.4.0"
-coverage = {extras = ["toml"], version = "^6.3.1"}
-furo = "^2022.2.14"
+[project.optional-dependencies]
+docs = [
+    "Sphinx",
+    "furo",
+]
+dev = [
+    "pytest",
+    "pytest-django",
+    "pytest-randomly",
+    "selenium",
+    "coverage",
+    "pre-commit",
+    "flake8",
+]
 
 [tool.pytest.ini_options]
-django_find_project = "false"
-addopts = """\
+django_find_project = false
+addopts = """
     -p no:doctest
     --ds=tests.settings
     --reuse-db
     """
-markers =[
+markers = [
     # marks tests as slow (deselect with '-m "not slow"')
     "slow",
 ]
@@ -76,3 +83,6 @@ source = [
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["hitcount"]
