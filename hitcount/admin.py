@@ -13,15 +13,15 @@ from hitcount.utils import _get_model_from_string
 
 
 class HitAdmin(admin.ModelAdmin):
-    list_display = ('created', 'user', 'ip', 'user_agent', 'hitcount')
-    search_fields = ('ip', 'user_agent')
-    date_hierarchy = 'created'
+    list_display = ("created", "user", "ip", "user_agent", "hitcount")
+    search_fields = ("ip", "user_agent")
+    date_hierarchy = "created"
     actions = [
-        'block_ips',
-        'block_user_agents',
-        'block_and_delete_ips',
-        'block_and_delete_user_agents',
-        'delete_queryset',
+        "block_ips",
+        "block_user_agents",
+        "block_and_delete_ips",
+        "block_and_delete_user_agents",
+        "delete_queryset",
     ]
 
     def __init__(self, *args, **kwargs):
@@ -33,8 +33,8 @@ class HitAdmin(admin.ModelAdmin):
 
     def get_actions(self, request):
         actions = super().get_actions(request)
-        if 'delete_selected' in actions:
-            del actions['delete_selected']
+        if "delete_selected" in actions:
+            del actions["delete_selected"]
         return actions
 
     def block_ips(self, request, queryset):
@@ -80,6 +80,7 @@ class HitAdmin(admin.ModelAdmin):
                 obj.delete()  # calling it this way to get custom delete() method
 
             self.message_user(request, "%s successfully deleted." % msg)
+
     delete_queryset.short_description = _("Delete selected hits")
 
 
@@ -87,8 +88,8 @@ admin.site.register(Hit, HitAdmin)
 
 
 class HitCountAdmin(admin.ModelAdmin):
-    list_display = ('content_object', 'hits', 'modified')
-    fields = ('hits',)
+    list_display = ("content_object", "hits", "modified")
+    fields = ("hits",)
 
     def has_add_permission(self, request):
         return False

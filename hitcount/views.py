@@ -16,12 +16,13 @@ class HitCountJSONView(AJAXRequiredMixin, HitCountViewMixin, View):
     """
     JSON response view to handle HitCount POST.
     """
+
     def get(self, request, *args, **kwargs):
         msg = _("Hits counted via POST only.")
-        return JsonResponse({'success': False, 'error_message': msg})
+        return JsonResponse({"success": False, "error_message": msg})
 
     def post(self, request, *args, **kwargs):
-        hitcount_pk = request.POST.get('hitcountPK')
+        hitcount_pk = request.POST.get("hitcountPK")
 
         try:
             hitcount = HitCount.objects.get(pk=hitcount_pk)
@@ -43,24 +44,25 @@ class HitCountDetailView(DetailView, HitCountViewMixin):
     then further inject the response from the attempt to count the Hit into
     the template context.
     """
+
     count_hit = False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        assert self.object, 'The object for Detail view has not been defined'
+        assert self.object, "The object for Detail view has not been defined"
 
         hit_count = HitCount.objects.get_for_object(self.object)
         hits = hit_count.hits
-        context['hitcount'] = {'pk': hit_count.pk}
+        context["hitcount"] = {"pk": hit_count.pk}
 
         if self.count_hit:
             hit_count_response = self.hit_count(self.request, hit_count)
             if hit_count_response.hit_counted:
                 hits = hits + 1
-            context['hitcount']['hit_counted'] = hit_count_response.hit_counted
-            context['hitcount']['hit_message'] = hit_count_response.hit_message
+            context["hitcount"]["hit_counted"] = hit_count_response.hit_counted
+            context["hitcount"]["hit_message"] = hit_count_response.hit_message
 
-        context['hitcount']['total_hits'] = hits
+        context["hitcount"]["total_hits"] = hits
 
         return context

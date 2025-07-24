@@ -5,8 +5,8 @@ from hitcount.managers.hits import HitManager
 
 
 __all__ = (
-    'HitCountManager',
-    'HitManager',
-    'BlockedIPManager',
-    'BlockedUserAgentManager',
+    "HitCountManager",
+    "HitManager",
+    "BlockedIPManager",
+    "BlockedUserAgentManager",
 )

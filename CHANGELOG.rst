@@ -27,6 +27,7 @@ for end-of-life versions.
 **Chores**
 
 - Migrated from ``poetry`` to ``pyproject.toml``.
+- Updated development tooling (switched from flake8/isort to ruff)
 
 
 1.3.0

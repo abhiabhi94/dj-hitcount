@@ -13,7 +13,7 @@ from hitcount.utils import get_ip
 
 class AJAXRequiredMixin:
     def dispatch(self, request, *args, **kwargs):
-        if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        if not request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
             raise Http404()
 
         return super().dispatch(request, *args, **kwargs)
@@ -51,8 +51,7 @@ class HitCountViewMixin:
         not.  `'hit_message` will indicate by what means the Hit was either
         counted or ignored.
         """
-        UpdateHitCountResponse = namedtuple(
-            'UpdateHitCountResponse', 'hit_counted hit_message')
+        UpdateHitCountResponse = namedtuple("UpdateHitCountResponse", "hit_counted hit_message")
         # as of Django 1.8.4 empty sessions are not being saved
         # https://code.djangoproject.com/ticket/25489
         if not request.session.session_key:
@@ -65,34 +64,32 @@ class HitCountViewMixin:
         else:
             ip = None
 
-        user_agent = request.META.get('HTTP_USER_AGENT', '')[:255]
+        user_agent = request.META.get("HTTP_USER_AGENT", "")[:255]
 
         # first, check our request against the IP blocked
         if BlockedIP.objects.is_blocked(ip):
-            return UpdateHitCountResponse(False, 'Not counted: user IP has been blocked')
+            return UpdateHitCountResponse(False, "Not counted: user IP has been blocked")
 
         # second, check our request against the user agent blocked
         if BlockedUserAgent.objects.is_blocked(user_agent):
-            return UpdateHitCountResponse(False, 'Not counted: user agent has been blocked')
+            return UpdateHitCountResponse(False, "Not counted: user agent has been blocked")
 
         # third, see if we are excluding a specific user group or not
         exclude_user_group = settings.HITCOUNT_EXCLUDE_USER_GROUP
         if exclude_user_group and request.user.is_authenticated:
             if request.user.groups.filter(name__in=exclude_user_group):
-                return UpdateHitCountResponse(False, 'Not counted: user group has been excluded')
+                return UpdateHitCountResponse(False, "Not counted: user group has been excluded")
 
         # eliminated first three possible exclusions, now on to checking our database of
         # active hits to see if we should count another one
 
         # check limit on hits from a unique ip address (HITCOUNT_HITS_PER_IP_LIMIT)
         if Hit.objects.has_limit_reached_by_ip(ip):
-            return UpdateHitCountResponse(
-                False, 'Not counted: hits per IP address limit reached')
+            return UpdateHitCountResponse(False, "Not counted: hits per IP address limit reached")
 
         session_key = request.session.session_key
         if Hit.objects.has_limit_reached_by_session(session_key, hitcount):
-            return UpdateHitCountResponse(
-                False, 'Not counted: hits per session limit reached.')
+            return UpdateHitCountResponse(False, "Not counted: hits per session limit reached.")
 
         hit = Hit(
             session=session_key,
@@ -104,10 +101,9 @@ class HitCountViewMixin:
         if request.user.is_authenticated:
             hit.user = user
 
-            response = UpdateHitCountResponse(
-                True, 'Hit counted: user authentication')
+            response = UpdateHitCountResponse(True, "Hit counted: user authentication")
         else:
-            response = UpdateHitCountResponse(True, 'Hit counted: session key')
+            response = UpdateHitCountResponse(True, "Hit counted: session key")
 
         hit.save()
         return response

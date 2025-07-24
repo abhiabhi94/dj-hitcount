@@ -15,18 +15,17 @@ from hitcount.utils import get_hitcount_model
 HitCount = get_hitcount_model()
 
 
-@patch.object(settings, 'HITCOUNT_KEEP_HIT_IN_DATABASE', {'days': 30})
+@patch.object(settings, "HITCOUNT_KEEP_HIT_IN_DATABASE", {"days": 30})
 class TestHitCountCleanUp(TestCase):
-    COMMAND_NAME = 'hitcount_cleanup'
+    COMMAND_NAME = "hitcount_cleanup"
 
     def setUp(self):
-
-        post = Post.objects.create(title='hi', content='some text')
+        post = Post.objects.create(title="hi", content="some text")
         hit_count = HitCount.objects.create(content_object=post)
 
         for x in range(10):
             created = timezone.now() - timedelta(days=x * 5)
-            with patch('django.utils.timezone.now') as mock_now:
+            with patch("django.utils.timezone.now") as mock_now:
                 mock_now.return_value = created
 
                 Hit.objects.create(hitcount=hit_count)
@@ -50,4 +49,4 @@ class TestHitCountCleanUp(TestCase):
 
         call_command(self.COMMAND_NAME, stdout=out)
 
-        self.assertIn('Successfully removed 4 Hits', out.getvalue())
+        self.assertIn("Successfully removed 4 Hits", out.getvalue())

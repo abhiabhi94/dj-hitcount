@@ -21,7 +21,6 @@ HitCount = get_hitcount_model()
 
 
 class TestHitCountAdmin(SimpleTestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
         self.admin = HitCountAdmin(HitCount, AdminSite())
@@ -31,18 +30,17 @@ class TestHitCountAdmin(SimpleTestCase):
 
 
 class TestHitAdmin(TestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
         self.admin = HitAdmin(Hit, AdminSite())
-        self.request = self.factory.get(reverse('admin:hitcount_hit_changelist'))
+        self.request = self.factory.get(reverse("admin:hitcount_hit_changelist"))
 
         # https://code.djangoproject.com/ticket/17971
-        self.request.session = 'session'
+        self.request.session = "session"
         messages = FallbackStorage(self.request)
         self.request._messages = messages
 
-        post = Post.objects.create(title='my title', content='my text')
+        post = Post.objects.create(title="my title", content="my text")
         hit_count = HitCount.objects.create(content_object=post)
 
         for x in range(10):
@@ -60,9 +58,9 @@ class TestHitAdmin(TestCase):
                'delete_queryset',
                ]
         """
-        self.request.user = User.objects.create_superuser(username='admin', password='admin', email='a@a.com')
+        self.request.user = User.objects.create_superuser(username="admin", password="admin", email="a@a.com")
 
-        self.assertIs('delete_selected' not in self.admin.get_actions(self.request), True)
+        self.assertIs("delete_selected" not in self.admin.get_actions(self.request), True)
 
     def test_get_actions_methods(self):
         """
@@ -75,11 +73,11 @@ class TestHitAdmin(TestCase):
         """
         self.request.user = AnonymousUser()
         actions = [
-            'block_ips',
-            'block_user_agents',
-            'block_and_delete_ips',
-            'block_and_delete_user_agents',
-            'delete_queryset',
+            "block_ips",
+            "block_user_agents",
+            "block_and_delete_ips",
+            "block_and_delete_user_agents",
+            "delete_queryset",
         ]
 
         self.assertEqual(actions, list(self.admin.get_actions(self.request).keys()))
@@ -101,9 +99,9 @@ class TestHitAdmin(TestCase):
         qs = Hit.objects.all()[:5]
 
         self.admin.block_ips(self.request, qs)
-        ips = BlockedIP.objects.values_list('ip', flat=True)
+        ips = BlockedIP.objects.values_list("ip", flat=True)
 
-        self.assertEqual(ips[4], '127.0.0.5')
+        self.assertEqual(ips[4], "127.0.0.5")
         self.assertEqual(BlockedIP.objects.all().count(), 5)
 
     def test_block_ips_add_only_once(self):
@@ -111,7 +109,7 @@ class TestHitAdmin(TestCase):
         Test adding `block_ips` to ensure adding the same IP address more
         than once does not duplicate a record in the BlockedIP table.
         """
-        ip = '127.0.0.5'
+        ip = "127.0.0.5"
 
         qs = Hit.objects.filter(ip=ip)
         self.admin.block_ips(self.request, qs)
@@ -130,16 +128,16 @@ class TestHitAdmin(TestCase):
         self.admin.block_user_agents(self.request, qs)
         ua = BlockedUserAgent.objects.last()
 
-        self.assertEqual(ua.user_agent, 'agent_5')
+        self.assertEqual(ua.user_agent, "agent_5")
         self.assertEqual(BlockedUserAgent.objects.all().count(), 1)
 
     def test_block_user_agents_multiple(self):
         qs = Hit.objects.all()[:5]
 
         self.admin.block_user_agents(self.request, qs)
-        uas = BlockedUserAgent.objects.values_list('user_agent', flat=True)
+        uas = BlockedUserAgent.objects.values_list("user_agent", flat=True)
 
-        self.assertEqual(uas[2], 'agent_7')
+        self.assertEqual(uas[2], "agent_7")
         self.assertEqual(BlockedUserAgent.objects.all().count(), 5)
 
     def test_block_user_agents_add_only_once(self):
@@ -147,7 +145,7 @@ class TestHitAdmin(TestCase):
         Test adding `block_ips` to ensure adding the same user agent more
         than once does not duplicate a record in the BlockedUserAgent table.
         """
-        ip = '127.0.0.5'
+        ip = "127.0.0.5"
         qs = Hit.objects.filter(ip=ip)
 
         self.admin.block_user_agents(self.request, qs)
@@ -162,7 +160,7 @@ class TestHitAdmin(TestCase):
         self.assertEqual(BlockedUserAgent.objects.all().count(), 1)
 
     def test_delete_queryset(self):
-        my_admin = User.objects.create_superuser('myuser', 'myemail@example.com', '1234')
+        my_admin = User.objects.create_superuser("myuser", "myemail@example.com", "1234")
         self.request.user = my_admin
 
         qs = Hit.objects.all()[:5]
@@ -173,7 +171,7 @@ class TestHitAdmin(TestCase):
         self.assertEqual(hit_count.hits, 5)
 
     def test_delete_queryset_single_item(self):
-        my_admin = User.objects.create_superuser('myuser', 'myemail@example.com', '1234')
+        my_admin = User.objects.create_superuser("myuser", "myemail@example.com", "1234")
         self.request.user = my_admin
 
         qs = Hit.objects.filter(ip="127.0.0.5")
@@ -184,7 +182,7 @@ class TestHitAdmin(TestCase):
         self.assertEqual(hit_count.hits, 9)
 
     def test_delete_queryset_permission_denied(self):
-        my_admin = User.objects.create_user('myuser', 'myemail@example.com', '1234')
+        my_admin = User.objects.create_user("myuser", "myemail@example.com", "1234")
         self.request.user = my_admin
 
         qs = Hit.objects.all()[:5]
@@ -192,7 +190,7 @@ class TestHitAdmin(TestCase):
             self.admin.delete_queryset(self.request, qs)
 
     def test_block_and_delete_ips(self):
-        my_admin = User.objects.create_superuser('myuser', 'myemail@example.com', '1234')
+        my_admin = User.objects.create_superuser("myuser", "myemail@example.com", "1234")
         self.request.user = my_admin
 
         qs = Hit.objects.all()[:5]
@@ -204,7 +202,7 @@ class TestHitAdmin(TestCase):
         self.assertEqual(BlockedIP.objects.all().count(), 5)
 
     def test_block_and_delete_user_agents(self):
-        my_admin = User.objects.create_superuser('myuser', 'myemail@example.com', '1234')
+        my_admin = User.objects.create_superuser("myuser", "myemail@example.com", "1234")
         self.request.user = my_admin
 
         qs = Hit.objects.all()[:5]

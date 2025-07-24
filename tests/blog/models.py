@@ -10,8 +10,8 @@ class Post(models.Model, HitCountModelMixin):
     content = models.TextField()
     hit_count_generic = GenericRelation(
         hitcount_settings.HITCOUNT_HITCOUNT_MODEL,
-        object_id_field='object_pk',
-        related_query_name='hit_count_generic_relation'
+        object_id_field="object_pk",
+        related_query_name="hit_count_generic_relation",
     )
 
     def __str__(self):

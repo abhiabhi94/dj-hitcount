@@ -17,22 +17,20 @@ HitCount = get_hitcount_model()
 
 
 class BaseHitCountViewTest(TestCase):
-
     def setUp(self):
-        self.post = Post.objects.create(title='my title', content='my text')
+        self.post = Post.objects.create(title="my title", content="my text")
         self.hit_count = HitCount.objects.create(content_object=self.post)
         self.factory = RequestFactory()
         self.request_post = self.factory.post(
-            '/',
-            {'hitcountPK': self.hit_count.pk},
+            "/",
+            {"hitcountPK": self.hit_count.pk},
             REMOTE_ADDR="127.0.0.1",
-            HTTP_USER_AGENT='my_clever_agent',
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            HTTP_USER_AGENT="my_clever_agent",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
         self.request_get = self.factory.get(
-            '/',
-            REMOTE_ADDR="127.0.0.1",
-            HTTP_USER_AGENT='my_clever_agent',
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            "/", REMOTE_ADDR="127.0.0.1", HTTP_USER_AGENT="my_clever_agent", HTTP_X_REQUESTED_WITH="XMLHttpRequest"
+        )
 
         self.engine = import_module(settings.SESSION_ENGINE)
         self.store = self.engine.SessionStore()
@@ -44,9 +42,8 @@ class BaseHitCountViewTest(TestCase):
 
 
 class TestHitCountJSONView(BaseHitCountViewTest):
-
     def test_require_ajax(self):
-        non_ajax_request = self.factory.get('/')
+        non_ajax_request = self.factory.get("/")
         with self.assertRaises(Http404):
             HitCountJSONView.as_view()(non_ajax_request)
 
@@ -54,7 +51,7 @@ class TestHitCountJSONView(BaseHitCountViewTest):
         """
         Test require POST request or raise 404
         """
-        non_ajax_request = self.factory.get('/', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        non_ajax_request = self.factory.get("/", HTTP_X_REQUESTED_WITH="XMLHttpRequest")
         non_ajax_request.session = self.store
         response = HitCountJSONView.as_view()(non_ajax_request)
         json_response = json.loads(response.content.decode())
@@ -75,15 +72,17 @@ class TestHitCountJSONView(BaseHitCountViewTest):
         Test a valid request with an invalid hitcount pk.
         """
         wrong_pk_request = self.factory.post(
-            '/', {'hitcountPK': 15},
+            "/",
+            {"hitcountPK": 15},
             REMOTE_ADDR="127.0.0.1",
-            HTTP_USER_AGENT='my_clever_agent',
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            HTTP_USER_AGENT="my_clever_agent",
+            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
+        )
         wrong_pk_request.session = self.store
 
         response = HitCountJSONView.as_view()(wrong_pk_request)
 
-        self.assertEqual(response.content, b'HitCount object_pk not present.')
+        self.assertEqual(response.content, b"HitCount object_pk not present.")
 
 
 class TestHitCountDetailView(BaseHitCountViewTest):
@@ -95,8 +94,8 @@ class TestHitCountDetailView(BaseHitCountViewTest):
 
         response = view(self.request_get, pk=self.post.pk)
 
-        self.assertEqual(response.context_data['hitcount']['pk'], self.hit_count.pk)
-        self.assertEqual(response.context_data['hitcount']['total_hits'], 0)
+        self.assertEqual(response.context_data["hitcount"]["pk"], self.hit_count.pk)
+        self.assertEqual(response.context_data["hitcount"]["total_hits"], 0)
 
     def test_count_hit_incremented(self):
         """
@@ -106,10 +105,10 @@ class TestHitCountDetailView(BaseHitCountViewTest):
 
         response = view(self.request_get, pk=self.post.pk)
 
-        self.assertEqual(response.context_data['hitcount']['total_hits'], 1)
-        self.assertEqual(response.context_data['hitcount']['pk'], self.hit_count.pk)
+        self.assertEqual(response.context_data["hitcount"]["total_hits"], 1)
+        self.assertEqual(response.context_data["hitcount"]["pk"], self.hit_count.pk)
 
-    @patch.object(settings, 'HITCOUNT_HITS_PER_SESSION_LIMIT', 1)
+    @patch.object(settings, "HITCOUNT_HITS_PER_SESSION_LIMIT", 1)
     def test_count_hit_incremented_only_once(self):
         """
         Increment a hit and then get the response.
@@ -118,11 +117,11 @@ class TestHitCountDetailView(BaseHitCountViewTest):
 
         response = view(self.request_get, pk=self.post.pk)
 
-        self.assertEqual(response.context_data['hitcount']['total_hits'], 1)
-        self.assertEqual(response.context_data['hitcount']['pk'], self.hit_count.pk)
+        self.assertEqual(response.context_data["hitcount"]["total_hits"], 1)
+        self.assertEqual(response.context_data["hitcount"]["pk"], self.hit_count.pk)
         view = HitCountDetailView.as_view(model=Post, count_hit=True)
 
         response = view(self.request_get, pk=self.post.pk)
 
-        self.assertEqual(response.context_data['hitcount']['total_hits'], 1)
-        self.assertEqual(response.context_data['hitcount']['pk'], self.hit_count.pk)
+        self.assertEqual(response.context_data["hitcount"]["total_hits"], 1)
+        self.assertEqual(response.context_data["hitcount"]["pk"], self.hit_count.pk)

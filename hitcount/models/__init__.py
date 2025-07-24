@@ -6,9 +6,9 @@ from hitcount.models.hits import HitCountBase
 
 
 __all__ = (
-    'HitCountBase',
-    'HitCount',
-    'Hit',
-    'BlockedIP',
-    'BlockedUserAgent',
+    "HitCountBase",
+    "HitCount",
+    "Hit",
+    "BlockedIP",
+    "BlockedUserAgent",
 )
