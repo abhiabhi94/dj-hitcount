@@ -10,10 +10,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 @pytest.mark.slow
 class TestUpdateHitCount(StaticLiveServerTestCase):
-
     def setUp(self):
         options = Options()
-        options.add_argument('-headless')
+        options.add_argument("-headless")
         self.selenium = webdriver.Firefox()
         self.delay = 10
 
@@ -21,10 +20,10 @@ class TestUpdateHitCount(StaticLiveServerTestCase):
         self.selenium.quit()
 
     def test_ajax_hit(self):
-        url = reverse('ajax', args=[1])
+        url = reverse("ajax", args=[1])
         self.selenium.get("%s%s" % (self.live_server_url, url))
 
         wait = WebDriverWait(self.selenium, self.delay)
-        response = wait.until(EC.text_to_be_present_in_element((By.ID, 'hit-counted-value'), 'true'))
+        response = wait.until(EC.text_to_be_present_in_element((By.ID, "hit-counted-value"), "true"))
 
         self.assertIs(response, True)

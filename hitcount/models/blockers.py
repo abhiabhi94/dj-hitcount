@@ -10,15 +10,14 @@ class BlockedIP(models.Model):
     objects = BlockedIPManager()
 
     class Meta:
-        verbose_name = _('Blocked IP')
-        verbose_name_plural = _('Blocked IPs')
+        verbose_name = _("Blocked IP")
+        verbose_name_plural = _("Blocked IPs")
 
     def __str__(self):
         return self.ip
 
 
 class BlockedUserAgent(models.Model):
-
     user_agent = models.CharField(max_length=255, unique=True)
     objects = BlockedUserAgentManager()
 
@@ -27,4 +26,4 @@ class BlockedUserAgent(models.Model):
         verbose_name_plural = _("Blocked User Agents")
 
     def __str__(self):
-        return '%s' % self.user_agent
+        return "%s" % self.user_agent

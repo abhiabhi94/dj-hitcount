@@ -58,7 +58,6 @@ dev = [
     "selenium",
     "coverage",
     "pre-commit",
-    "flake8",
 ]
 
 [tool.pytest.ini_options]
@@ -86,3 +85,7 @@ skip_covered = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["hitcount"]
+
+[tool.ruff]
+line-length = 120
+exclude = [".tox", ".git", "*/migrations/*", "*/static/CACHE/*", "docs"]

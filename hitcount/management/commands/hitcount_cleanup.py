@@ -22,4 +22,4 @@ class Command(BaseCommand):
         qs = Hit.objects.filter(created__lt=period)
         number_removed = qs.count()
         qs.delete()
-        self.stdout.write('Successfully removed %s Hits' % number_removed)
+        self.stdout.write("Successfully removed %s Hits" % number_removed)

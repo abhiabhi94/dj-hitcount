@@ -5,7 +5,6 @@ from hitcount.models import BlockedUserAgent
 
 
 class TestBlockedUserAgent(SimpleTestCase):
-
     def test_string_representation(self):
         ua_text = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_4)"
 
@@ -15,8 +14,7 @@ class TestBlockedUserAgent(SimpleTestCase):
 
 
 class TestBlockedIPModel(SimpleTestCase):
-
     def test_string_representation(self):
-        ip = BlockedIP(ip='127.0.0.1')
+        ip = BlockedIP(ip="127.0.0.1")
 
-        self.assertEqual(str(ip), '127.0.0.1')
+        self.assertEqual(str(ip), "127.0.0.1")

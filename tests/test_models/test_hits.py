@@ -13,14 +13,13 @@ HitCount = get_hitcount_model()
 
 
 class TestHitModel(TestCase):
-
     def setUp(self):
-        post = Post.objects.create(title='my title', content='my text')
+        post = Post.objects.create(title="my title", content="my text")
         hit_count = HitCount.objects.create(content_object=post)
         self.hit = Hit.objects.create(hitcount=hit_count)
 
     def test_string_representation(self):
-        self.assertEqual(str(self.hit), f'Hit: {self.hit.pk}')
+        self.assertEqual(str(self.hit), f"Hit: {self.hit.pk}")
 
     def test_save_does_not_increases_hitcount_for_already_created_obj(self):
         hit_count = HitCount.objects.last()
@@ -80,16 +79,15 @@ class TestHitModel(TestCase):
 
 
 class TestHitCountModel(TestCase):
-
     def setUp(self):
-        self.post = Post.objects.create(title='my title', content='my text')
+        self.post = Post.objects.create(title="my title", content="my text")
 
     def test_string_representation(self):
-        post = Post.objects.create(title='my title', content='my text')
+        post = Post.objects.create(title="my title", content="my text")
 
         hit_count = HitCount(content_object=post)
 
-        self.assertEqual(str(hit_count), 'Post title: my title')
+        self.assertEqual(str(hit_count), "Post title: my title")
 
     def test_increase(self):
         hit_count = HitCount.objects.create(content_object=self.post)
@@ -117,7 +115,7 @@ class TestHitCountModel(TestCase):
 
         for x in range(10):
             created = timezone.now() - timedelta(days=x * 5)
-            with patch('django.utils.timezone.now') as mock_now:
+            with patch("django.utils.timezone.now") as mock_now:
                 mock_now.return_value = created
 
                 Hit.objects.create(hitcount=hit_count)
@@ -130,10 +128,7 @@ class TestHitCountModel(TestCase):
         hit_count = HitCount.objects.create(content_object=self.post)
         hit_count.increase()
 
-        self.assertEqual(
-             HitCount.objects.get_for_object(self.post).hits,
-             self.post.hit_count.hits
-        )
+        self.assertEqual(HitCount.objects.get_for_object(self.post).hits, self.post.hit_count.hits)
 
     def test_mixing_hits_in_last(self):
         """
@@ -144,7 +139,7 @@ class TestHitCountModel(TestCase):
 
         for x in range(10):
             created = timezone.now() - timedelta(days=x * 5)
-            with patch('django.utils.timezone.now') as mock_now:
+            with patch("django.utils.timezone.now") as mock_now:
                 mock_now.return_value = created
 
                 Hit.objects.create(hitcount=hit_count)

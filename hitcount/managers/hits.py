@@ -8,16 +8,13 @@ from hitcount.conf import settings
 
 
 class HitCountManager(models.Manager):
-
     def get_for_object(self, obj):
         ctype = ContentType.objects.get_for_model(obj)
-        hit_count, created = self.get_or_create(
-            content_type=ctype, object_pk=obj.pk)
+        hit_count, created = self.get_or_create(content_type=ctype, object_pk=obj.pk)
         return hit_count
 
 
 class HitManager(models.Manager):
-
     def filter_active(self, *args, **kwargs):
         """
         Return only the 'active' hits.

@@ -20,33 +20,35 @@ class HitCountBase(models.Model):
     Model that stores the hit totals for any content object.
 
     """
+
     hits = models.PositiveIntegerField(default=0)
     modified = models.DateTimeField(auto_now=True)
     content_type = models.ForeignKey(
-        ContentType, related_name="content_type_set_for_%(class)s", on_delete=models.CASCADE)
-    object_pk = models.PositiveIntegerField(verbose_name='object ID')
-    content_object = GenericForeignKey('content_type', 'object_pk')
+        ContentType, related_name="content_type_set_for_%(class)s", on_delete=models.CASCADE
+    )
+    object_pk = models.PositiveIntegerField(verbose_name="object ID")
+    content_object = GenericForeignKey("content_type", "object_pk")
 
     objects = HitCountManager()
 
     class Meta:
         abstract = True
-        ordering = ('-hits',)
+        ordering = ("-hits",)
         get_latest_by = "modified"
         verbose_name = _("hit count")
         verbose_name_plural = _("hit counts")
         unique_together = ("content_type", "object_pk")
 
     def __str__(self):
-        return '%s' % self.content_object
+        return "%s" % self.content_object
 
     def increase(self):
-        self.hits = F('hits') + 1
-        self.save(update_fields=['hits'])
+        self.hits = F("hits") + 1
+        self.save(update_fields=["hits"])
 
     def decrease(self):
-        self.hits = F('hits') - 1
-        self.save(update_fields=['hits'])
+        self.hits = F("hits") - 1
+        self.save(update_fields=["hits"])
 
     def hits_in_last(self, **kwargs):
         """
@@ -99,6 +101,7 @@ class Hit(models.Model):
     management command.
 
     """
+
     created = models.DateTimeField(editable=False, auto_now_add=True, db_index=True)
     ip = models.CharField(max_length=40, editable=False, db_index=True, null=True)
     session = models.CharField(max_length=40, editable=False, db_index=True)
@@ -109,13 +112,13 @@ class Hit(models.Model):
     objects = HitManager()
 
     class Meta:
-        ordering = ('-created',)
-        get_latest_by = 'created'
+        ordering = ("-created",)
+        get_latest_by = "created"
         verbose_name = _("hit")
         verbose_name_plural = _("hits")
 
     def __str__(self):
-        return 'Hit: %s' % self.pk
+        return "Hit: %s" % self.pk
 
     def save(self, *args, **kwargs):
         """
@@ -137,6 +140,5 @@ class Hit(models.Model):
         NOTE: This doesn't work at all during a queryset.delete().
 
         """
-        delete_hit_count.send(
-            sender=self, instance=self, save_hitcount=save_hitcount)
+        delete_hit_count.send(sender=self, instance=self, save_hitcount=save_hitcount)
         super().delete()
