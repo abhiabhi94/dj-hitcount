@@ -21,7 +21,7 @@ To start development on this project, fork this repository and follow the follow
     # activate the virtual environment(window users)
     $ venv\Scripts\activate
     # install dependencies
-    (venv) $ pip install -e . Django -r dev-requirements.txt pre-commit
+    (venv) $ pip install -e '.[dev]'
     # migrate the migrations to the database and also creates some placeholder data
     (venv) $ python manage.py migrate
     # start the development server
